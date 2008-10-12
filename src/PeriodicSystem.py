@@ -1,3 +1,4 @@
+'''Updated October 12, 2008'''
 from numpy import *
 import math
 class PeriodicSystem:
@@ -30,7 +31,7 @@ class PeriodicSystem:
                        indexExpanded+=1
         self.species=speciesExpanded
         self.coordinates=coordinatesExpanded
-        self.translation_vectors=self.translation_vectors*3
+        self.translation_vectors=self.translation_vectors*2
         self.numAtoms=len(speciesExpanded)
         
     def expandx3(self):
