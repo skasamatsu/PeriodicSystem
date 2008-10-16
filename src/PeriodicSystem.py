@@ -1,4 +1,4 @@
-'''Updated October 12, 2008'''
+'''Updated October 16, 2008'''
 from numpy import *
 import math
 class PeriodicSystem:
@@ -181,6 +181,14 @@ class PeriodicSystem:
                     output.write('%f \t %f \t %f \t' %tuple(self.coordinates[i]) + str(j+1)+'\n')
                     break
         output.close()
+    def makeAtomIndexList(self):
+        '''Create a dictionary of indexes of atom'''
+        index_dict={}
+        for i in range(self.species):
+            index_dict[i]=[]
+        for i in range(self.numAtoms):
+            index_dict[self.species(i)].append(i)
+        return index_dict
     
 
 def xyz2PeriodicSystem(xyzfile,translation_vectors):
