@@ -181,7 +181,7 @@ class PeriodicSystem:
                     output.write('%f \t %f \t %f \t' %tuple(self.coordinates[i]) + str(j+1)+'\n')
                     break
         output.close()
-    def makeAtomIndexList(self):
+    def makeAtomIndexDict(self):
         '''Create a dictionary of indexes of atom'''
         index_dict={}
         for i in range(self.species):
