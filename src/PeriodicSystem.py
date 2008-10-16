@@ -182,12 +182,13 @@ class PeriodicSystem:
                     break
         output.close()
     def makeAtomIndexDict(self):
-        '''Create a dictionary of indexes of atom'''
+        '''Create a dictionary of indexes with the name of atom species as keys'''
         index_dict={}
-        for i in range(self.species):
+        for i in self.species:
             index_dict[i]=[]
         for i in range(self.numAtoms):
-            index_dict[self.species(i)].append(i)
+            index_dict[self.species[i]].append(i)
+        # print index_dict
         return index_dict
     
 
