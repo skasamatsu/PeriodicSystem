@@ -1,4 +1,4 @@
-'''Updated October 16, 2008'''
+'''Updated November 13, 2008'''
 from numpy import *
 import math
 class PeriodicSystem:
@@ -190,6 +190,32 @@ class PeriodicSystem:
             index_dict[self.species[i]].append(i)
         # print index_dict
         return index_dict
+    def sortBySpecies(self,orderlist):
+        sorted_coor_tmp=zeros([self.numAtoms,3])
+        species_list_tmp=[]
+        sorted_index=[]
+        for i in range(len(orderlist)): sorted_index.append([])
+        for i in range(self.numAtoms):
+            assert self.species[i] in orderlist       
+            for j in range(len(orderlist)):
+#                print i,j
+#                print self.species[i]
+#                print orderlist[j]
+#                print sorted_index[j]
+#                sorted_index[j].extend(0)
+                if self.species[i]==orderlist[j]: sorted_index[j].extend([i])
+        indexlist=[]
+        for i in range(len(sorted_index)):
+            indexlist.extend(sorted_index[i])      
+        #print indexlist
+        #print self.species[indexlist[3]]
+        for i in range(self.numAtoms):
+            sorted_coor_tmp[i]=self.coordinates[indexlist[i]]
+            species_list_tmp.extend([self.species[indexlist[i]]])
+        self.coordinates=sorted_coor_tmp
+        #print species_list_tmp
+        self.species=species_list_tmp
+        
     
 
 def xyz2PeriodicSystem(xyzfile,translation_vectors):
