@@ -1,4 +1,4 @@
-'''Updated November 13, 2008'''
+'''Updated December 15, 2008'''
 from numpy import *
 import math
 class PeriodicSystem:
@@ -215,7 +215,22 @@ class PeriodicSystem:
         self.coordinates=sorted_coor_tmp
         #print species_list_tmp
         self.species=species_list_tmp
-        
+    def toPOSCAR(self,orderlist,system_name):
+        '''Creates POSCAR file for VASP'''
+        self.sortBySpecies(orderlist)
+        fi=open('POSCAR','w')
+        fi.write(system_name+' \n'+
+             '   1.00 \n'+
+             ' '+str(self.translation_vectors[0,0])+'\t'+str(self.translation_vectors[0,1])+'\t'+str(self.translation_vectors[0,2])+'\n'+
+             ' '+str(self.translation_vectors[1,0])+'\t'+str(self.translation_vectors[1,1])+'\t'+str(self.translation_vectors[1,2])+'\n'+
+             ' '+str(self.translation_vectors[2,0])+'\t'+str(self.translation_vectors[2,1])+'\t'+str(self.translation_vectors[2,2])+'\n'
+              )
+        for i in orderlist:
+            fi.write(' '+str(self.countAtom(i)))
+        fi.write('\nCartesian\n')
+        for i in range(self.numAtoms):
+            fi.write(' '+str(self.coordinates[i,0])+' '+str(self.coordinates[i,1])+' '+str(self.coordinates[i,2])+'\n')
+        fi.close()
     
 
 def xyz2PeriodicSystem(xyzfile,translation_vectors):
