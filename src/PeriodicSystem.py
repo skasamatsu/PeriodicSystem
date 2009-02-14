@@ -1,4 +1,4 @@
-'''Updated December 15, 2008'''
+'''Updated February 14, 2009'''
 from numpy import *
 import math
 class PeriodicSystem:
@@ -181,6 +181,15 @@ class PeriodicSystem:
                     output.write('%f \t %f \t %f \t' %tuple(self.coordinates[i]) + str(j+1)+'\n')
                     break
         output.close()
+    def toblockLatticeVectorsInAng(self,datfile):
+        '''Creates a text file containing %blockLatticeVectors in Angstroms to be used by SIESTA
+        Input
+          datfile - name of the output file'''
+        output=open(datfile,'w')
+        for i in range(3):
+            output.write('%f \t %f \t %f \t' %tuple(self.translation_vectors[i]) +'\n')
+        output.close()
+    
     def makeAtomIndexDict(self):
         '''Create a dictionary of indexes with the name of atom species as keys'''
         index_dict={}
