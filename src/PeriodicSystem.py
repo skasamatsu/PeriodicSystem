@@ -1,6 +1,6 @@
 '''Updated March 7, 2009'''
 from numpy import *
-from numpy.linalg import inv
+from numpy.linalg import inv,norm
 import math
 
 from elements import *
@@ -246,6 +246,26 @@ class PeriodicSystem:
         self.coordinates = sorted_coor_tmp
         self.species = species_list_tmp
 
+    def find_nearest_neighbor(self, atom_index):
+        '''find nearest neigbor of atom with index atom_index
+        returns list [min_index, min_dist]'''
+        min_dist = 1000
+        min_index = -1
+        for i in range(0, atom_index):
+            dist = norm(self.coordinates[i] - self.coordinates[atom_index])
+            if dist < min_dist:
+               min_dist =  dist
+               min_index = i
+        for i in range(atom_index+1, self.numAtoms):
+            dist = norm(self.coordinates[i] - self.coordinates[atom_index])
+            if dist < min_dist:
+               min_dist =  dist
+               min_index = i
+        return [min_index, min_dist]
+            
+        
+            
+        
     def toPOSCAR(self, orderlist, system_name, d="c"):
         '''Creates POSCAR file for VASP'''
         self.sortBySpecies(orderlist)
@@ -368,6 +388,60 @@ def POSCAR2PeriodicSystem(POSCAR, orderlist):
                 transvec[2] * line[2]
         counter += 1
     return PeriodicSystem(species, coor, transvec)
+
+def v5POSCAR2PeriodicSystem(POSCAR):
+    '''Creates a PeriodicSystem object from VASP POSCAR file
+    Input
+      POSCAR - location of the input POSCAR file (can use a name other 
+      than POSCAR
+    '''
+    file = open(POSCAR)
+
+    # Read the comment line.
+    file.readline()  
+    # Lattice constant, lattice vectors
+    latcons = float(file.readline())  
+    transvec = reshape(zeros(9, float), (3,3))
+    for i in range(3):
+        vec = file.readline().split()
+        transvec[i] = [(float(vec[j]) * latcons) for j in [0,1,2]]
+
+    # Count the number of atoms for each specie from POSCAR
+    # Creation of species list
+    orderlist = file.readline().split()
+    nspecie_list = file.readline().split()  
+    species = []
+    assert len(nspecie_list) == len(orderlist)
+    for i in range(len(nspecie_list)):
+        nspecie_list[i] = int(nspecie_list[i])
+    for i in range(len(orderlist)):
+        species.extend([orderlist[i]]*nspecie_list[i])
+    species = tuple(species)
+    natoms = sum(nspecie_list)
+
+    DirCar = file.readline().lstrip()
+    if DirCar[0] == 'S' or DirCar[0] == 's':  # Selective dynamics?
+        DirCar = file.readline().lstrip()  # Read direct or cartesian
+    if DirCar[0] != 'D' and DirCar[0] != 'd' and \
+            DirCar[0] != 'C' and DirCar[0] != 'c':
+        raise IOError, 'Error in input in specification of cartesian' \
+            'or direct'
+    counter = 0
+    coor = reshape(zeros(natoms * 3, float), (natoms, 3))
+    while counter < natoms:
+        line = file.readline().lstrip()
+        line = line.split()
+        for j in range(3):
+            line[j] = float(line[j])
+        if DirCar[0] == 'C' or DirCar[0] == 'c':
+            coor[counter] = array(line[0:3]) * latcons
+        else:
+            coor[counter] = transvec[0] * line[0] + \
+                transvec[1] * line[1] + \
+                transvec[2] * line[2]
+        counter += 1
+    return PeriodicSystem(species, coor, transvec)
+
 
 def XSF2PeriodicSystem(xsffile):
     '''Create a PeriodicSystem from XCrysDen XSF file'''
